@@ -1,6 +1,7 @@
 import copy as cp
 import numpy as np
 import tensorflow as tf
+import torch
 
 __all__ = [
     "DotDict",
@@ -51,8 +52,8 @@ class DotDict(dict):
         """
         # Check every item of `DotDict` object.
         for k, v in self.items():
-            # Check whether `v` is `tf.Tensor` or `DotDict`.
-            if isinstance(v, tf.Tensor) or isinstance(v, dict):
+            # Check whether `v` is `tf.Tensor` or `DotDict`. or `torch.Tensor`.
+            if isinstance(v, tf.Tensor) or isinstance(v, dict) or isinstance(v, torch.Tensor):
                 self.__setitem__(k, v.numpy())
         # Return the final `DotDict` object.
         return self

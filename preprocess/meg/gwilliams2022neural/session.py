@@ -3,6 +3,7 @@ import os, mne
 import itertools
 import numpy as np
 import pandas as pd
+import sys
 from bidict import bidict
 from scipy.io.wavfile import read
 from nltk.tokenize import sent_tokenize
@@ -111,17 +112,18 @@ def split_events(events, path_stimulus, split_duration=None, train_shift=None):
     """
     ## Prepare for splitting data.
     # Convert events from `pd.DataFrame` to `DotDict`.
-    # events - (n_events[list],)
+    # events - (n_events[list],) 
     events_ = []
     for event_idx, event_i in events.iterrows():
         events_.append(DotDict({
             "onset": event_i["onset"],
             "duration": event_i["duration"],
-            "trial_type": eval(event_i["trial_type"]),
+            "trial_type": eval(event_i["trial_type"]), 
             "value": event_i["value"],
             "sample": event_i["sample"],
         }))
-    events = events_
+
+    events = events_  
     # Construct words from events, separated by audio slices.
     events_words = []; events_words_i = []
     durations_sound = []; start_sound = 0.; stop_sound = 0.
@@ -144,6 +146,7 @@ def split_events(events, path_stimulus, split_duration=None, train_shift=None):
                 "value": event_i.value,
                 "sample": event_i.sample,
             })); stop_sound = np.round(event_i.onset + event_i.duration, decimals=3)
+
     events_words.append(events_words_i); durations_sound.append([start_sound, stop_sound])
     events_words = [events_words_i for events_words_i in events_words if len(events_words_i) > 0]
     durations_sound = [duration_sound_i for duration_sound_i in durations_sound if duration_sound_i[1]-duration_sound_i[0] > 0.]
@@ -395,6 +398,7 @@ def refer_events(events, events_refer, path_stimulus):
                                     int(np.round((event_test_i.onset+2.5)*freq_, decimals=0))):
                 if sample_idx < test_mask_i.shape[0]: test_mask_i[sample_idx] = True
             train_mask = train_mask & ~test_mask_i
+
     n_samples_train_possible = np.sum(train_mask); n_samples_test = n_samples - n_samples_train_possible
     # Get durations_train to check whether duration is long enough (greater than 3s).
     durations_train = []
@@ -625,6 +629,7 @@ def preprocess_dataset(dataset):
         dataset[data_idx].data[1] = np.where(
             dataset[data_idx].data[1] > clamp_range[1],
             clamp_range[1], dataset[data_idx].data[1])
+        
     # Log information related to current preprocess.
     print((
         "INFO: Finish the preprocess of dataset with {:d} clamped values ({:.2f}%)"+
@@ -726,25 +731,48 @@ def preprocess_session(path_session, path_stimulus, events_=None):
     """
     # Load data from specified session.
     data, positions, events = load_data(path_session)
+    # visualize (data, positions, events)
+    # print(data)
+    # print(positions)
+    # events.to_excel("./event.xlsx")
+    # print('events saved')
+    # sys.exit()
+
     # Check whether reference events is None.
     if events_ is None:
         # Split events to get the [train,validation,test]-set.
         events_train, events_test = split_events(events, path_stimulus)
+        # with open(r'./events_train.txt', 'w') as fp:
+        #     for i in range(len(events_train)):
+        #         fp.write(str(events_train[i])+'\n')
+        # with open(r'./events_test.txt', 'w') as fp:
+        #     for i in range(len(events_test)):
+        #         fp.write(str(events_test[i])+'\n')
     else:
         # Use reference events to get the [train,validation,test]-set.
         events_train, events_test = refer_events(events, events_, path_stimulus)
+        # with open(r'./events_train.txt', 'w') as fp:
+        #     for i in range(len(events_train)):
+        #         fp.write(str(events_train[i])+'\n')
+        # with open(r'./events_test.txt', 'w') as fp:
+        #     for i in range(len(events_test)):
+        #         fp.write(str(events_test[i])+'\n')
+
     # Create dataset from events_train & events_test.
     dataset_train, dataset_test = create_dataset(data, (events_train, events_test), path_stimulus)
     # Preprocess dataset to get the final dataset.
     dataset_train = preprocess_dataset(dataset_train)
     dataset_test = preprocess_dataset(dataset_test)
+
     # Attach positions to dataset_train & dataset_test.
     for data_train_idx in range(len(dataset_train)):
         dataset_train[data_train_idx].chan_pos = positions
         assert positions.shape[0] == dataset_train[data_train_idx].data[1].shape[1]
+
     for data_test_idx in range(len(dataset_test)):
         dataset_test[data_test_idx].chan_pos = positions
         assert positions.shape[0] == dataset_test[data_test_idx].data[1].shape[1]
+
     # Return the final `dataset` & `events` & `positions`.
     return (dataset_train, dataset_test), (events_train, events_test)
 
@@ -753,7 +781,7 @@ if __name__ == "__main__":
     base = os.path.join(os.getcwd(), os.pardir, os.pardir, os.pardir)
     path_dataset = os.path.join(base, "data", "meg.gwilliams2022neural")
     path_session1 = os.path.join(path_dataset, "sub-01", "ses-0", "meg", "sub-01_ses-0_task-1_meg.con")
-    path_session2 = os.path.join(path_dataset, "sub-01", "ses-1", "meg", "sub-01_ses-1_task-1_meg.con")
+    # path_session2 = os.path.join(path_dataset, "sub-01", "ses-1", "meg", "sub-01_ses-1_task-1_meg.con")
     path_stimulus = os.path.join(path_dataset, "stimuli")
 
     # Initialize random seed.
@@ -761,6 +789,7 @@ if __name__ == "__main__":
 
     # Preprocess the specified subject session.
     dataset1, events1 = preprocess_session(path_session1, path_stimulus)
+    print(events1)
     # Preprocess the specified subject session with reference events.
-    dataset2, events2 = preprocess_session(path_session2, path_stimulus, events_=events1)
+    # dataset2, events2 = preprocess_session(path_session2, path_stimulus, events_=events1)
 

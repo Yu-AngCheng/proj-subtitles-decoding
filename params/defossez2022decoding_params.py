@@ -1,5 +1,5 @@
-import tensorflow as tf
-# local dep
+import torch
+
 if __name__ == "__main__":
     import os, sys
     sys.path.insert(0, os.pardir)
@@ -17,22 +17,22 @@ class defossez2022decoding_params(DotDict):
     # Initialize macro parameter.
     _precision = "float32"
 
-    def __init__(self, n_channels=273, n_features=128, n_labels=8):
+    def __init__(self,n_channels=208, n_subjects = 8, n_features=128):
         """
         Initialize `defossez2022decoding_params`.
         """
         ## First call super class init function to set up `DotDict`
-        ## style object and inherit it's functionality.
+        ## style object and inherit its functionality.
         super(defossez2022decoding_params, self).__init__()
 
         ## Generate all parameters hierarchically.
         # -- Model parameters
-        self.model = defossez2022decoding_params._gen_model_params(n_channels, n_features, n_labels)
+        self.model = defossez2022decoding_params._gen_model_params(n_channels,n_subjects, n_features)
         # -- Train parameters
         self.train = defossez2022decoding_params._gen_train_params()
 
         ## Do init iteration.
-        defossez2022decoding_params.iteration(self, 0)
+        self.iteration(0)
 
     """
     update funcs
@@ -52,7 +52,7 @@ class defossez2022decoding_params(DotDict):
     ## def _gen_model_* funcs
     # def _gen_model_params func
     @staticmethod
-    def _gen_model_params(n_channels, n_features, n_labels):
+    def _gen_model_params(n_channels,n_subjects, n_features):
         """
         Generate model parameters.
         """
@@ -62,10 +62,10 @@ class defossez2022decoding_params(DotDict):
         ## -- Normal parameters
         # The size of input channels.
         model_params.n_channels = n_channels
+        # The number of subjects.
+        model_params.n_subjects = n_subjects
         # The size of output features.
         model_params.n_features = n_features
-        # The size of output labels.
-        model_params.n_labels = n_labels
 
         # Return the final `model_params`.
         return model_params
@@ -82,10 +82,9 @@ class defossez2022decoding_params(DotDict):
 
         ## -- Normal parameters
         # The type of dataset.
-        train_params.dataset = "meg.gwilliams2022neural" #"meg_liu2019cell"
+        train_params.dataset = "meg.gwilliams2022neural" 
         # Precision parameter.
-        train_params.precision = getattr(tf, defossez2022decoding_params._precision)\
-            if hasattr(tf, defossez2022decoding_params._precision) else tf.float32
+        train_params.precision = torch.float32
         # Number of epochs used in training process.
         train_params.n_epochs = 20
         # Whether use graph mode or eager mode.
@@ -102,7 +101,7 @@ class defossez2022decoding_params(DotDict):
         train_params.i_log = 10
         # Period of iterations to execute test.
         train_params.i_test = 10
-        # Peroid of iterations to save model.
+        # Period of iterations to save model.
         train_params.i_model = 100
 
         # Return the final `train_params`.
@@ -110,5 +109,4 @@ class defossez2022decoding_params(DotDict):
 
 if __name__ == "__main__":
     # Instantiate `defossez2022decoding_params`.
-    defossez2022decoding_params_inst = defossez2022decoding_params(n_channels=273, n_features=128, n_labels=8)
-
+    defossez2022decoding_params_inst = defossez2022decoding_params(n_channels=208,n_subjects=8, n_features=128)

@@ -1,10 +1,5 @@
-#!/usr/bin/env python3
-"""
-Created on 17:10, Dec. 24th, 2022
-
-@author: Norbert Zheng
-"""
 import pickle
+
 # local dep
 if __name__ == "__main__":
     import os, sys
