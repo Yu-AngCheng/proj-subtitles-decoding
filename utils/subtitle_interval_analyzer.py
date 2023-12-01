@@ -36,7 +36,7 @@ def find_max_min_avg_intervals(srt_file_path):
 
 
 if __name__ == '__main__':
-    srt_path = 'Skyfall.srt'
+    srt_path = '../data/Skyfall.srt'
     max_duration, min_duration, avg_duration = find_max_min_avg_intervals(srt_path)
     print(f"Max duration: {max_duration[1]}s, idx:{max_duration[0]}")
     print(f"Min duration: {min_duration[1]}s, idx: {min_duration[0]}")
