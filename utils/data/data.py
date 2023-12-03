@@ -1,14 +1,11 @@
 import pickle
 
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.pardir)
 
 __all__ = [
     "save_pickle",
     "load_pickle",
 ]
+
 
 # def save_pickle func
 def save_pickle(fname, obj):
@@ -19,6 +16,7 @@ def save_pickle(fname, obj):
     """
     with open(fname, "wb") as f:
         pickle.dump(obj, f)
+
 
 # def load_pickle func
 def load_pickle(fname):

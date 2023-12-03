@@ -1,5 +1,6 @@
 import torch 
 
+
 class AverageMeter(object):
     """Computes and stores the average and current value
        Imported from https://github.com/pytorch/examples/blob/master/imagenet/main.py#L247-L262
@@ -19,6 +20,7 @@ class AverageMeter(object):
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
+
 
 def evaluate(output, target, topk=(1,)):
     """Computes the accuracy over the k top predictions for the specified values of k"""

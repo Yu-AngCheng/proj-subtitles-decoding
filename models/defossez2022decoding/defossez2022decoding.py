@@ -1,15 +1,7 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import numpy as np
-
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir))
-    from layers import *
-else:
-    from .layers import *
+from models.defossez2022decoding.layers.Conv1DBlock import Conv1DBlock
+from models.defossez2022decoding.layers.SubjectBlock import SubjectBlock
 
 import utils
 

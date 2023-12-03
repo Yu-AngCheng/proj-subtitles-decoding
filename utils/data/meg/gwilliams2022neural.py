@@ -2,13 +2,9 @@ import os
 import numpy as np
 import torch.nn.functional as F
 import pickle
-
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir, os.pardir))
 from utils import DotDict
-from utils.data import load_pickle
+from utils.data.data import load_pickle
+
 
 __all__ = [
     "load_gwilliams2022neural_origin",
@@ -145,7 +141,7 @@ def downsample_array(array, original_sample_rate=22050, target_sample_rate=16000
 
 if __name__ == "__main__":
     # macro
-    base = os.path.join(os.getcwd(), os.pardir, os.pardir, os.pardir)
+    base = os.path.join(os.getcwd())
     path_data = os.path.join(base, "data", "meg.gwilliams2022neural")
     # Load data from specified data.
     n_subjects = 2

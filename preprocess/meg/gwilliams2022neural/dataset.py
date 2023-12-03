@@ -1,18 +1,13 @@
 import os
 import numpy as np
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir, os.pardir))
-    from subject import preprocess_subject
-else:
-    from preprocess.meg.gwilliams2022neural.subject import preprocess_subject
+from preprocess.meg.gwilliams2022neural.subject import preprocess_subject
 from utils import DotDict
 from utils.data import save_pickle
 
 __all__ = [
     "create_dataset",
 ]
+
 
 # def create_dataset func
 def create_dataset(path_dataset):
@@ -53,9 +48,10 @@ def create_dataset(path_dataset):
         " for trainset and {:d} samples ({:.2f}%) for testset in preprocess.meg.gwilliams2022neural.dataset."
     ).format(n_train, n_train/(n_train+n_test)*100., n_test, n_test/(n_train+n_test)*100.))
 
+
 if __name__ == "__main__":
     # macro
-    base = os.path.join(os.getcwd(), os.pardir, os.pardir, os.pardir)
+    base = os.path.join(os.getcwd())
     path_dataset = os.path.join(base, "data", "meg.gwilliams2022neural")
 
     # Initialize random seed.

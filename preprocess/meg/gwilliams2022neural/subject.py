@@ -1,16 +1,11 @@
 import os
 import numpy as np
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir, os.pardir))
-    from run import preprocess_run
-else:
-    from preprocess.meg.gwilliams2022neural.run import preprocess_run
+from preprocess.meg.gwilliams2022neural.run import preprocess_run
 
 __all__ = [
     "preprocess_subject",
 ]
+
 
 # def preprocess_subject func
 def preprocess_subject(path_subject, path_stimulus, events_=None):
@@ -42,6 +37,7 @@ def preprocess_subject(path_subject, path_stimulus, events_=None):
     ))
     # Return the final `dataset` & `events`.
     return dataset, events_
+
 
 if __name__ == "__main__":
     # macro

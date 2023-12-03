@@ -1,18 +1,13 @@
-
-import os, re
+import os
+import re
 import numpy as np
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir, os.pardir))
-    from session import preprocess_session
-else:
-    from preprocess.meg.gwilliams2022neural.session import preprocess_session
+from preprocess.meg.gwilliams2022neural.session import preprocess_session
 from utils import DotDict
 
 __all__ = [
     "preprocess_run",
 ]
+
 
 # def preprocess_run func
 def preprocess_run(path_run, path_stimulus, events_=None):
@@ -50,6 +45,7 @@ def preprocess_run(path_run, path_stimulus, events_=None):
     ).format(n_train, n_train/(n_train+n_test)*100., n_test, n_test/(n_train+n_test)*100.))
     # Return the final `dataset` & `events`.
     return dataset, events
+
 
 if __name__ == "__main__":
     # macro

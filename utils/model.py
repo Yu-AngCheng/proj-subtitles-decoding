@@ -4,15 +4,12 @@ import functools
 import numpy as np
 import torch
 
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.pardir)
 
 __all__ = [
     "torch_scope",
     "set_seeds",
 ]
+
 
 # def torch_scope func
 def torch_scope(func):
@@ -36,6 +33,7 @@ def torch_scope(func):
     # Return the final wrapper.
     return _wrapper
 
+
 # def set_seeds func
 def set_seeds(seed=42):
     """
@@ -50,6 +48,7 @@ def set_seeds(seed=42):
     torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
 
+
 # def get_device func
 def get_device(index=0):
     """
@@ -60,6 +59,7 @@ def get_device(index=0):
     if torch.cuda.is_available() and len(torch.cuda.device_count()) >= index + 1:
         return torch.device("cuda:{:d}".format(index))
     return torch.device("cpu")
+
 
 # def avg_grads func
 def avg_grads(grads_tower):

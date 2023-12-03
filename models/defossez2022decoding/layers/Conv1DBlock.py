@@ -1,15 +1,10 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir, os.pardir))
 
 __all__ = [
     "Conv1DBlock",
 ]
+
 
 class Conv1DBlock(nn.Module):
     """
@@ -66,8 +61,12 @@ class Conv1DBlock(nn.Module):
 
 if __name__ == "__main__":
     # macro
-    batch_size = 16; seq_len = 200; n_input_channels = 320
-    n_filters = [320, 320, 640]; kernel_sizes = [3, 3, 3]; dilation_rates = [1, 2, 2]
+    batch_size = 16
+    seq_len = 200
+    n_input_channels = 320
+    n_filters = [320, 320, 640]
+    kernel_sizes = [3, 3, 3]
+    dilation_rates = [1, 2, 2]
 
     # Instantiate Conv1DBlock.
     cb_inst = Conv1DBlock(n_input_channels,n_filters, kernel_sizes, dilation_rates)

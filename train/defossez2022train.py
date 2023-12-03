@@ -1,21 +1,12 @@
-import os, sys, time
-import copy as cp
-import numpy as np
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from sklearn.metrics import accuracy_score, f1_score
 import argparse
 from torch.utils.tensorboard  import SummaryWriter
-
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.pardir)
-
 import models, utils
 from utils.data import save_pickle,load_pickle
 from utils.metric import AverageMeter, evaluate
@@ -24,6 +15,7 @@ from utils.data.meg.gwilliams2022neural import load_gwilliams2022neural_origin
 from models.defossez2022decoding import defossez2022decoding
 from models.wav2vec import wav2vec
 from train.dataset import Trainset, Testset
+
 
 def validate(epoch,model_audio,model_meg, val_loader, writer):
     model_audio.eval()
@@ -58,6 +50,7 @@ def validate(epoch,model_audio,model_meg, val_loader, writer):
     print(' Val Acc@1 {top1.avg:.3f}'.format(top1=top1))
     print(' Val Acc@2 {top2.avg:.3f}'.format(top2=top2))
     return 
+
 
 def train(epoch, model_audio,model_meg,optimizer, train_loader, writer):
     model_audio.train()
@@ -108,6 +101,7 @@ def train(epoch, model_audio,model_meg,optimizer, train_loader, writer):
     print(' Train Acc@1 {top1.avg:.3f}'.format(top1=top1))
     print(' Train Acc@2 {top2.avg:.3f}'.format(top2=top2))
     return 
+
 
 def run(args,d2dparam):
     save_folder = os.path.join('../experiments',  args.exp_name)
@@ -172,6 +166,7 @@ def run(args,d2dparam):
     torch.save(model_audio.state_dict(), '/root/NLP/models/model_audio'+filename+'.pt')
     torch.save(model_meg.state_dict(), '/root/NLP/models/model_meg'+filename+'.pt')
     return 
+
 
 if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser()

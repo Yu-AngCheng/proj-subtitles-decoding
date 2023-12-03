@@ -5,14 +5,6 @@ import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
 import pickle
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.pardir)
-
-import models, utils
-from params import defossez2022decoding_params
-from utils.data.meg.gwilliams2022neural import load_gwilliams2022neural_origin
 
 
 class Trainset(Dataset):

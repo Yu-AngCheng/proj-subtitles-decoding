@@ -1,18 +1,13 @@
 import torch
 import torch.nn as nn
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir, os.pardir))
-    from SpatialAttention import *
-    from SubjectLayer import *
-else:
-    from .SpatialAttention import *
-    from .SubjectLayer import *
+from models.defossez2022decoding.layers.SpatialAttention import *
+from models.defossez2022decoding.layers.SubjectLayer import *
+
 
 __all__ = [
     "SubjectBlock",
 ]
+
 
 class SubjectBlock(nn.Module):
     """
@@ -65,6 +60,7 @@ class SubjectBlock(nn.Module):
 
         # Return the final outputs.
         return outputs
+
 
 if __name__ == "__main__":
     import numpy as np

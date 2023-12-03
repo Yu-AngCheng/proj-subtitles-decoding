@@ -1,15 +1,12 @@
 import torch
 import torch.nn as nn
-
 import numpy as np
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir, os.pardir))
+
 
 __all__ = [
     "SpatialAttention",
 ]
+
 
 class SpatialAttention(nn.Module):
     """
@@ -79,6 +76,7 @@ class SpatialAttention(nn.Module):
 
         outputs = torch.matmul(inputs, probs)
         return outputs
+
 
 if __name__ == "__main__":
     # macro

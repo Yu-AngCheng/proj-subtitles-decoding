@@ -1,18 +1,11 @@
-
-import os, mne
 import itertools
+import mne
+import os
 import numpy as np
 import pandas as pd
-import sys
 from bidict import bidict
 from scipy.io.wavfile import read
-from nltk.tokenize import sent_tokenize
 from sklearn.preprocessing import robust_scale
-
-# local dep
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir, os.pardir))
 from utils import DotDict
 
 __all__ = [
@@ -92,12 +85,12 @@ def load_data(path_meg, resample_rate=120):
     # (208, 2)
     positions = mne.channels.find_layout(data.info).pos[:,:2]
 
-    ## Load events from specified session.
     # Load events from specified session events file.
     events = pd.read_csv(path_events, sep="\t")
 
     # Return the final `data` & `positions` & `events`.
     return data, positions, events
+
 
 # def split_events func
 def split_events(events, path_stimulus, split_duration=None, train_shift=None):
@@ -296,6 +289,7 @@ def split_events(events, path_stimulus, split_duration=None, train_shift=None):
     # Return the final `events_train` & `events_test`.
     return events_train, events_test
 
+
 # def refer_events func
 def refer_events(events, events_refer, path_stimulus):
     """
@@ -464,6 +458,7 @@ def refer_events(events, events_refer, path_stimulus):
     # Return the final `events_train` & `events_test`.
     return events_train, events_test
 
+
 # def create_dataset func
 def create_dataset(data, events, path_stimulus):
     """
@@ -567,6 +562,7 @@ def create_dataset(data, events, path_stimulus):
     # Return the final `dataset_train` & `dataset_test`.
     return dataset_train, dataset_test
 
+
 # def preprocess_dataset func
 def preprocess_dataset(dataset):
     """
@@ -638,6 +634,7 @@ def preprocess_dataset(dataset):
     # Return the final `dataset`.
     return dataset
 
+
 # def truncate_audio func
 def truncate_audio(audio, truncate_range):
     """
@@ -662,6 +659,7 @@ def truncate_audio(audio, truncate_range):
     ]
     # Return the final `audio_truncated`.
     return audio_truncated
+
 
 # def set_events func
 def set_events(data, events):
@@ -692,6 +690,7 @@ def set_events(data, events):
     # Return the final `data`.
     return data
 
+
 # def get_events func
 def get_events(data):
     """
@@ -718,6 +717,7 @@ def get_events(data):
         events[event_idx].description = marker.inverse[events[event_idx].description]
     # Return the final `events`.
     return events
+
 
 # def preprocess_session func
 def preprocess_session(path_session, path_stimulus, events_=None):
@@ -775,6 +775,7 @@ def preprocess_session(path_session, path_stimulus, events_=None):
 
     # Return the final `dataset` & `events` & `positions`.
     return (dataset_train, dataset_test), (events_train, events_test)
+
 
 if __name__ == "__main__":
     # macro

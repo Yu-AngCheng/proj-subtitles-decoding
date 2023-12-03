@@ -1,13 +1,10 @@
 import torch
-
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.pardir)
 from utils import DotDict
 
 __all__ = [
     "defossez2022decoding_params",
 ]
+
 
 class defossez2022decoding_params(DotDict):
     """
@@ -106,6 +103,7 @@ class defossez2022decoding_params(DotDict):
 
         # Return the final `train_params`.
         return train_params
+
 
 if __name__ == "__main__":
     # Instantiate `defossez2022decoding_params`.

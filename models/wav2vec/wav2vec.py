@@ -1,14 +1,10 @@
-from transformers import Wav2Vec2Processor, Wav2Vec2Model
-from datasets import load_dataset
 import torch
 import logging
 import torch.nn as nn
+from utils.data import save_pickle, load_pickle
+from transformers import Wav2Vec2Processor, Wav2Vec2Model
+from datasets import load_dataset
 
-if __name__ == "__main__":
-    import os, sys
-    sys.path.insert(0, os.path.join(os.pardir, os.pardir))
-
-from utils.data import save_pickle,load_pickle
 
 # write a class for wav2vec
 class wav2vec(nn.Module):

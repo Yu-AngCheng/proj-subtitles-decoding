@@ -7,6 +7,7 @@ __all__ = [
     "DotDict",
 ]
 
+
 class DotDict(dict):
 
     # init class
@@ -286,6 +287,7 @@ class DotDict(dict):
                 DotDict.iter_setattr(dotdict, key, DotDict.iter_getattr(tensordict, key))
         # Return the final dotdict.
         return dotdict
+
 
 if __name__ == "__main__":
     # Instantiate DotDict.
