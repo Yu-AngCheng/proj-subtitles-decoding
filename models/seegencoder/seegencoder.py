@@ -2,25 +2,25 @@ import torch
 import torch.nn as nn
 
 
-def gen_pos_encoding(max_length, num_features):
+def gen_pos_encoding(max_length, num_channels):
     """
     Generate positional encoding for a sequence.
 
     Parameters:
     - max_length (int): The maximum length of the sequence.
-    - num_features (int): The number of features at each position.
+    - num_channels (int): The number of channels at each position.
 
     Returns:
-    - pe (torch.Tensor): A (max_length, num_features) matrix containing the positional encoding.
+    - pe (torch.Tensor): A (max_length, num_channels) matrix containing the positional encoding.
 
     The positional encoding is calculated using the formula:
-    - PE(t, 2i) = sin(t / 10000^(2i/num_features))
-    - PE(t, 2i+1) = cos(t / 10000^(2i/num_features))
+    - PE(t, 2i) = sin(t / 10000^(2i/num_channels))
+    - PE(t, 2i+1) = cos(t / 10000^(2i/num_channels))
     """
-    pe = torch.zeros(max_length, num_features)
+    pe = torch.zeros(max_length, num_channels)
     t = torch.arange(0, max_length, dtype=torch.float).unsqueeze(1)
-    i = torch.arange(0, num_features, 2, dtype=torch.float).unsqueeze(0)
-    div_term = torch.pow(10000.0, (2 * i) / num_features)
+    i = torch.arange(0, num_channels, 2, dtype=torch.float).unsqueeze(0)
+    div_term = torch.pow(10000.0, (2 * i) / num_channels)
     pe[:, 0::2] = torch.sin(t / div_term)
     pe[:, 1::2] = torch.cos(t / div_term)
     return pe
@@ -45,11 +45,12 @@ class SEEGTransformerEncoder(nn.Module):
         self.max_length = max_length
 
         # Positional Encoding
-        self.positional_encoding = gen_pos_encoding(self.max_length, self.num_channels)
+        positional_encoding = gen_pos_encoding(self.max_length, self.num_channels)
+        self.register_buffer('positional_encoding', positional_encoding)
 
         # Transformer Encoder
         encoder_layer = nn.TransformerEncoderLayer(d_model=num_channels, nhead=num_heads,
-                                                    dim_feedforward=dim_feedforward)
+                                                   dim_feedforward=dim_feedforward, batch_first=True)
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_encoder_layers)
 
         # Linear Layer to transform the shape
@@ -65,7 +66,7 @@ class SEEGTransformerEncoder(nn.Module):
         Returns:
         - output (torch.Tensor): A (batch_size, max_length, num_features) tensor containing the output sequence.
         """
-        src += self.positional_encoding[:src.size(0), :]
+        src += self.positional_encoding
         output = self.transformer_encoder(src, src_key_padding_mask=padding_mask)
         output = self.linear(output)
         return output
@@ -73,17 +74,21 @@ class SEEGTransformerEncoder(nn.Module):
 
 if __name__ == "__main__":
     max_length = 500
-    num_channels = 128
+    num_channels = 90
     num_features = 256
-    num_heads = 8
+    num_heads = 3
     num_encoder_layers = 6
     dim_feedforward = 2048
 
-    model = SEEGTransformerEncoder(num_channels, num_features, max_length, num_heads, num_encoder_layers, dim_feedforward)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    input_tensor = torch.randn(32, max_length, num_channels)
+    model = SEEGTransformerEncoder(num_channels, num_features, max_length, num_heads, num_encoder_layers, dim_feedforward).to(device)
+
+    input_tensor = torch.randn(32, max_length, num_channels).to(device)
 
     # A mask indicating no padding
-    src_mask = torch.zeros(32, max_length, dtype=torch.bool)
+    padding_mask = torch.zeros(32, max_length, dtype=torch.bool).to(device)
 
-    output = model(input_tensor, src_mask)
+    output = model(input_tensor, padding_mask)
+
+    assert output.shape == (32, max_length, num_features)
