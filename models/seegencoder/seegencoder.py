@@ -56,7 +56,7 @@ class SEEGTransformerEncoder(nn.Module):
         # Linear Layer to transform the shape
         self.linear = nn.Linear(num_channels, num_features)
 
-    def forward(self, src, padding_mask):
+    def forward(self, x, padding_mask):
         """
         Parameters:
         - src (torch.Tensor): A (batch_size, max_length, num_channels) tensor containing the input sequence.
@@ -66,8 +66,8 @@ class SEEGTransformerEncoder(nn.Module):
         Returns:
         - output (torch.Tensor): A (batch_size, max_length, num_features) tensor containing the output sequence.
         """
-        src += self.positional_encoding
-        output = self.transformer_encoder(src, src_key_padding_mask=padding_mask)
+        x += self.positional_encoding
+        output = self.transformer_encoder(x, src_key_padding_mask=padding_mask)
         output = self.linear(output)
         return output
 
