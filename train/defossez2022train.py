@@ -6,14 +6,12 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import argparse
-from torch.utils.tensorboard  import SummaryWriter
-import models, utils
-from utils.data import save_pickle,load_pickle
+from torch.utils.tensorboard import SummaryWriter
+import utils
 from utils.metric import AverageMeter, evaluate
 from params import defossez2022decoding_params
-from utils.data.meg.gwilliams2022neural import load_gwilliams2022neural_origin
 from models.defossez2022decoding import defossez2022decoding
-from models.wav2vec import wav2vec
+from models.soundencoder.soundencoder import SoundEncoder
 from train.dataset import Trainset, Testset
 
 
@@ -122,15 +120,16 @@ def run(args,d2dparam):
     val_loader = torch.utils.data.DataLoader(
          val_dataset, batch_size=args.batchsize, shuffle=False, num_workers=1)
     
-    # define network 
-    model_audio = wav2vec()
+    # define network
+    # TODO: specify the max_length
+    model_audio = SoundEncoder()
     model_meg = defossez2022decoding(d2dparam.model)
     if torch.cuda.is_available():
         model_audio = model_audio.cuda()
         model_meg = model_meg.cuda()
 
     # define optimizer
-    optimizer = optim.Adam([{'params':model_audio.seq_feature.parameters()},
+    optimizer = optim.Adam([{'params':model_audio.conv_block_1d.parameters()},
                                      {'params':model_meg.parameters()}],lr=1e-3)
 
     if args.cont:
