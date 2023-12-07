@@ -1,4 +1,6 @@
+import matplotlib.pyplot as plt
 import re
+import pdb
 from datetime import datetime
 
 
@@ -25,7 +27,6 @@ def calculate_durations(srt_file_path):
 
     return durations
 
-
 def find_max_min_avg_intervals(srt_file_path):
     durations = calculate_durations(srt_file_path)
     max_duration = max(durations, key=lambda x: x[1])
@@ -35,9 +36,28 @@ def find_max_min_avg_intervals(srt_file_path):
     return max_duration, min_duration, avg_duration
 
 
+def plot_durations(srt_file_path):
+    durations = calculate_durations(srt_file_path)
+    duration_times = [item[1] for item in durations]
+
+    plt.figure(figsize=(16, 6))
+    plt.hist(duration_times, bins=551)
+    plt.title('Duration Distribution')
+    plt.xlabel('Duration Time')
+    plt.ylabel('Frequency')
+
+    custom_ticks = [0.5 * i for i in range(int(max(duration_times)//0.5) + 2)]
+    plt.xticks(custom_ticks)
+
+    plt.savefig('../figures/duration_distribution.png', dpi=500)
+    plt.show()  
+
+    return
+
 if __name__ == '__main__':
     srt_path = '../data/Skyfall.srt'
-    max_duration, min_duration, avg_duration = find_max_min_avg_intervals(srt_path)
-    print(f"Max duration: {max_duration[1]}s, idx:{max_duration[0]}")
-    print(f"Min duration: {min_duration[1]}s, idx: {min_duration[0]}")
-    print(f"Average duration: {avg_duration:.3f}s")
+    plot_durations(srt_path)
+    # max_duration, min_duration, avg_duration = find_max_min_avg_intervals(srt_path)
+    # print(f"Max duration: {max_duration[1]}s, idx:{max_duration[0]}")
+    # print(f"Min duration: {min_duration[1]}s, idx: {min_duration[0]}")
+    # print(f"Average duration: {avg_duration:.3f}s")
