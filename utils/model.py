@@ -86,3 +86,16 @@ def avg_grads(grads_tower):
         grads_avg.append(grads_var_avg)
     # Return the final `grads_avg`.
     return grads_avg
+
+
+def count_parameters(model):
+    """
+    Count the number of trainable parameters in the model.
+
+    Parameters
+    - model (torch.nn.Module): The model to count the number of trainable parameters.
+
+    Returns
+    - num_params (int): The number of trainable parameters in the model.
+    """
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
