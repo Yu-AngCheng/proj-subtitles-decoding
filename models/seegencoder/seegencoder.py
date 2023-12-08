@@ -43,7 +43,8 @@ class SEEGEncoder(nn.Module):
     - dim_feedforward (int): The dimension of the feedforward network in the transformer.
     """
 
-    def __init__(self, num_input_channels, num_output_channels, input_length, output_length, num_heads, num_encoder_layers, dim_feedforward):
+    def __init__(self, num_input_channels=57, num_output_channels=128, input_length=4096, output_length=199,
+                 num_heads=3, num_encoder_layers=6, dim_feedforward=2048):
         super().__init__()
 
         # Positional Encoding
