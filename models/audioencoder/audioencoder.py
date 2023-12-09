@@ -4,9 +4,9 @@ import torchaudio
 from transformers import Wav2Vec2Processor, Wav2Vec2Model
 
 
-class SoundEncoder(nn.Module):
+class AudioEncoder(nn.Module):
     """
-    A sound encoder capable of embedding audio data of variable length to a fixed length vector. Built on top of
+    An audio encoder capable of embedding audio data of variable length to a fixed length vector. Built on top of
     wav2vec2.
 
     Parameters:
@@ -14,7 +14,7 @@ class SoundEncoder(nn.Module):
     longer sequences will be truncated.
     """
     def __init__(self, max_length=64000):
-        super(SoundEncoder, self).__init__()
+        super(AudioEncoder, self).__init__()
         model_name = "jonatasgrosman/wav2vec2-large-xlsr-53-english"
         self.processor = Wav2Vec2Processor.from_pretrained(model_name)
         self.model = Wav2Vec2Model.from_pretrained(model_name).to(device)
@@ -87,7 +87,7 @@ def load_and_resample(file_path, target_sample_rate=16000):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     max_length = 64000
-    model = SoundEncoder(max_length=max_length).to(device)
+    model = AudioEncoder(max_length=max_length).to(device)
 
     audio_files = [r"D:\audio_1-3seconds\audio_1-3seconds\segment_1_00-01-24,935_00-01-26,111.mp3",
                    r"D:\audio_1-3seconds\audio_1-3seconds\segment_2_00-01-26,996_00-01-28,728.mp3"]

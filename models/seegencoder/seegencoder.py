@@ -91,7 +91,7 @@ if __name__ == "__main__":
     num_input_channels = 57
     num_output_channels = 128
     input_length = 4096
-    output_length = 199     # 199 is the default output length from the sound encoder
+    output_length = 199     # 199 is the default output length from the audio encoder
     num_heads = 3
     num_encoder_layers = 6
     dim_feedforward = 2048
