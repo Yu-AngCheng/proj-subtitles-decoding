@@ -51,12 +51,12 @@ class CustomDataset(Dataset):
         # TODO: Load the real SEEG data for this index
         import random
         seeg_data = torch.randn(4096, 57)
-        padding_mask = torch.zeros(4096, dtype=torch.bool)
+        seeg_padding_mask = torch.zeros(4096, dtype=torch.bool)
         # Randomly set a number of trialing positions to True to simulate padding
         start_idx = random.randint(0, 4096)
-        padding_mask[start_idx:] = True
+        seeg_padding_mask[start_idx:] = True
 
-        return audio_data, seeg_data, padding_mask
+        return audio_data, seeg_data, seeg_padding_mask
 
     def __len__(self):
         return len(self.audio_file_paths)
