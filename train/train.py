@@ -122,9 +122,9 @@ def run(args):
     train_dataset = CustomDataset(audio_dir=audio_dir, seeg_dir=seeg_dir, train_ratio=train_ratio, is_train=True)
     test_dataset = CustomDataset(audio_dir=audio_dir, seeg_dir=seeg_dir, train_ratio=train_ratio, is_train=False)
     train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=args.batchsize, shuffle=True, num_workers=8)
+        train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=8)
     test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=args.batchsize, shuffle=False, num_workers=8)
+        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
 
     # define the audio encoder
     audio_encoder = AudioEncoder().to(device)

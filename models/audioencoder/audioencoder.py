@@ -11,7 +11,7 @@ class AudioEncoder(nn.Module):
     def __init__(self):
         super(AudioEncoder, self).__init__()
         model_name = "jonatasgrosman/wav2vec2-large-xlsr-53-english"
-        self.model = Wav2Vec2Model.from_pretrained(model_name).to(device)
+        self.model = Wav2Vec2Model.from_pretrained(model_name)
 
         self.conv_block_1d = torch.nn.Sequential(
             nn.Conv1d(1024, 360, kernel_size=3, stride=1, padding=1),
