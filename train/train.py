@@ -122,9 +122,9 @@ def run(args):
     train_dataset = CustomDataset(audio_dir=audio_dir, seeg_dir=seeg_dir, train_ratio=train_ratio, is_train=True)
     test_dataset = CustomDataset(audio_dir=audio_dir, seeg_dir=seeg_dir, train_ratio=train_ratio, is_train=False)
     train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=8)
+        train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
     test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=8)
+        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
 
     # define the audio encoder
     audio_encoder = AudioEncoder().to(device)
@@ -194,6 +194,7 @@ def get_args():
                             help="path to the seeg data folder")
     arg_parser.add_argument('--train_ratio', '-r', type=float, default=0.8,
                             help="the ratio of training data to all data")
+    arg_parser.add_argument('--num_workers', '-w', type=int, default=4, help="number of workers for dataloader")
     args = arg_parser.parse_args()
     return args
 

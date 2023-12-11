@@ -1,0 +1,5 @@
+tqdm==4.66.1
+numpy==1.25.2
+transformers==4.35.2
+tensorboard==2.15.1
+soundfile==0.12.1

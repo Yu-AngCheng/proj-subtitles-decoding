@@ -1,6 +1,25 @@
 # This work try to reproduce Défossez's work (Decoding speech from non-invasive brain recordings)
 
+
+
+## Prerequisites
+
+Ensure the following prerequisites are met for running the code:
+
+1. **Install PyTorch with CUDA:**
+
+   `pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118`
+
+2. **Install Additional Dependencies:**
+
+   `pip install -r requirements.txt`
+
+​	Ensure you run this command in the same directory where the `requirements.txt` file is located.
+
+
+
 # Dataset 
+
 Please first load data from https://osf.io/ag3kj/, you will get like sub01/ses0/meg/...
 save it to /data/meg/meg.gwilliams2022neural/
 like ../data/meg.gwilliams2022neural/sub-01/ses-0/meg/sub-01_ses-0_task-0_meg.con
