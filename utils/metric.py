@@ -37,3 +37,16 @@ def evaluate(output, target, topk=(1,)):
             correct_k = correct[:k].reshape(-1).float().sum(0)
             res.append(correct_k.mul_(100.0 / batch_size))
         return res
+
+
+def count_parameters(model):
+    """
+    Count the number of trainable parameters in the model.
+
+    Parameters
+    - model (torch.nn.Module): The model to count the number of trainable parameters.
+
+    Returns
+    - num_params (int): The number of trainable parameters in the model.
+    """
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)

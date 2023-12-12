@@ -3,7 +3,7 @@ import glob
 import re
 import torch
 from torch.utils.data import Dataset
-from utils.audioprocess import AudioProcessor
+from utils.audio_processor import AudioProcessor
 
 
 class CustomDataset(Dataset):

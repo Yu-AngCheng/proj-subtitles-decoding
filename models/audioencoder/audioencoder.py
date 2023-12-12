@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from transformers import Wav2Vec2Model
-from utils.audioprocess import AudioProcessor
+from utils.audio_processor import AudioProcessor
 
 
 class AudioEncoder(nn.Module):

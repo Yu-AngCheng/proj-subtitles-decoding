@@ -1,7 +1,7 @@
 import random
 import torch
 import torch.nn as nn
-from utils.model import count_parameters
+from utils.metric import count_parameters
 
 
 def gen_pos_encoding(seq_length, num_channels):
