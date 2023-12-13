@@ -21,12 +21,12 @@ class AudioEncoder(nn.Module):
     def forward(self, x):
         """
         Parameters:
-        - x (torch.Tensor): A (batch_size, max_audio_length) tensor containing the input sequence. The max_audio_length
-        depends on the AudioProcessor's max_audio_length parameter. By default, it is 64000.
+        - x (torch.Tensor): A (batch_size, target_audio_max_length) tensor containing the input sequence. The
+        target_audio_max_length is a member variable of the AudioProcessor class. By default, it is 100672.
 
         Returns:
         - representation (torch.Tensor): A (batch_size, seq_length, 128) tensor containing the output sequence. The
-        seq_length depends on the max length of the audio in the dataset(both train and test). By default, it is 314.
+        seq_length depends on target_audio_max_length. By default, it is 314.
         """
         # Extract the activation from the last hidden state
         output = self.model(x)
