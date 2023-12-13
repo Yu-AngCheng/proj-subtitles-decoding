@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from transformers import Wav2Vec2Model
-from utils.audio_processor import AudioProcessor
 
 
 class AudioEncoder(nn.Module):
@@ -27,7 +26,7 @@ class AudioEncoder(nn.Module):
 
         Returns:
         - representation (torch.Tensor): A (batch_size, seq_length, 128) tensor containing the output sequence. The
-        seq_length depends on the max_length parameter. By default, it is 199.
+        seq_length depends on the max length of the audio in the dataset(both train and test). By default, it is 314.
         """
         # Extract the activation from the last hidden state
         output = self.model(x)
@@ -44,17 +43,16 @@ class AudioEncoder(nn.Module):
 
 
 if __name__ == "__main__":
+    from dataset.dataset import CustomDataset
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    max_length = 64000
+
+    dataset = CustomDataset(data_file='../../data/data_segmented.npy', train_ratio=0.8, is_train=True)
+    audio_data1, _, _ = dataset[0]
+    audio_data2, _, _ = dataset[1]
+    audio_data = torch.stack([audio_data1, audio_data2]).to(device)
+
     model = AudioEncoder().to(device)
-
-    audio_files = [r"D:\audio_1-3seconds\audio_1-3seconds\segment_1_00-01-24,935_00-01-26,111.mp3",
-                   r"D:\audio_1-3seconds\audio_1-3seconds\segment_2_00-01-26,996_00-01-28,728.mp3"]
-
-    audio_processor = AudioProcessor()
-    audio_data = [audio_processor(audio_file) for audio_file in audio_files]
-
-    audio_data = torch.cat(audio_data).to(device)
 
     with torch.no_grad():
         representation = model(audio_data)
