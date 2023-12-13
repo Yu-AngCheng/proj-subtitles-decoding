@@ -116,24 +116,23 @@ def run(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Define the dataloaders
-    audio_dir = args.audio_dir
-    seeg_dir = args.seeg_dir
+    data_file = args.data_file
     train_ratio = args.train_ratio
-    train_dataset = CustomDataset(audio_dir=audio_dir, seeg_dir=seeg_dir, train_ratio=train_ratio, is_train=True)
-    test_dataset = CustomDataset(audio_dir=audio_dir, seeg_dir=seeg_dir, train_ratio=train_ratio, is_train=False)
+    train_dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, is_train=True)
+    test_dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, is_train=False)
     train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
+        train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, drop_last=True)
     test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, drop_last=True)
 
     # define the audio encoder
     audio_encoder = AudioEncoder().to(device)
 
     # define the seeg encoder
-    num_input_channels = 57
+    num_input_channels = 84
     num_output_channels = 128
-    input_length = 4096
-    output_length = 199  # 199 is the default output length from the audio encoder
+    input_length = 6443
+    output_length = 314  # 199 is the default output length from the audio encoder
     num_heads = 3
     num_encoder_layers = 6
     dim_feedforward = 2048
@@ -188,10 +187,8 @@ def get_args():
     arg_parser.add_argument('--cont', '-c', action='store_true',
                             help="whether to load saved the latest checkpoint from $EXP_NAME and continue training")
     arg_parser.add_argument('--batch_size', '-b', type=int, default=10, help="batch size")
-    arg_parser.add_argument('--audio_dir', '-ad', type=str, default='./data/audio_1-4seconds',
-                            help="path to the audio data folder")
-    arg_parser.add_argument('--seeg_dir', '-sd', type=str, default='./data/seeg_1-4seconds',
-                            help="path to the seeg data folder")
+    arg_parser.add_argument('--data_file', '-d', type=str, default='./data/data_segmented.npy',
+                            help="path to the .npy file containing the data")
     arg_parser.add_argument('--train_ratio', '-r', type=float, default=0.8,
                             help="the ratio of training data to all data")
     arg_parser.add_argument('--num_workers', '-w', type=int, default=4, help="number of workers for dataloader")
