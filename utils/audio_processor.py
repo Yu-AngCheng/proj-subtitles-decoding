@@ -73,7 +73,8 @@ if __name__ == "__main__":
     target_max_length = int(orig_max_length * (target_audio_sample_rate / orig_audio_sample_rate))
     print(f'The target max length is {target_max_length}')
 
-    audio_processor = AudioProcessor(target_sample_rate=target_audio_sample_rate, target_max_length=target_max_length)
+    audio_processor = AudioProcessor(target_max_length=target_max_length, orig_sample_rate=orig_audio_sample_rate,
+                                     target_sample_rate=target_audio_sample_rate)
 
     processed_audio = audio_processor(audio)
     print(f'The processed audio data has shape {processed_audio.shape}')
