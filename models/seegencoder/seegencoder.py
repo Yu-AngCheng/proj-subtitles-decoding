@@ -88,15 +88,24 @@ class SEEGEncoder(nn.Module):
 
 
 if __name__ == "__main__":
-    num_input_channels = 57
+    from dataset.dataset import CustomDataset
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    dataset = CustomDataset(data_file='../../data/data_segmented.npy', train_ratio=0.8, is_train=True)
+    _, seeg1, seeg_padding_mask1 = dataset[0]
+    _, seeg2, seeg_padding_mask2 = dataset[1]
+
+    seeg = torch.stack([seeg1, seeg2]).to(device)
+    seeg_padding_mask = torch.stack([seeg_padding_mask1, seeg_padding_mask2]).to(device)
+
+    num_input_channels = 84
     num_output_channels = 128
-    input_length = 4096
-    output_length = 199     # 199 is the default output length from the audio encoder
+    input_length = 6443
+    output_length = 314     # 314 is the default output length from the audio encoder
     num_heads = 3
     num_encoder_layers = 6
     dim_feedforward = 2048
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = SEEGEncoder(num_input_channels=num_input_channels, num_output_channels=num_output_channels,
                         input_length=input_length, output_length=output_length, num_heads=num_heads,
@@ -104,16 +113,6 @@ if __name__ == "__main__":
 
     print(f"Number of parameters: {count_parameters(model)}")
 
-    input_tensor = torch.randn(32, input_length, num_input_channels).to(device)
+    output = model(seeg, seeg_padding_mask)
 
-    # A mask indicating no padding
-    padding_mask = torch.zeros(32, input_length, dtype=torch.bool)
-    # Randomly set some numbers of trialing positions to True to simulate padding
-    for i in range(32):
-        start_idx = random.randint(0, input_length)
-        padding_mask[i, start_idx:] = True
-    padding_mask = padding_mask.to(device)
-
-    output = model(input_tensor, padding_mask)
-
-    assert output.shape == (32, output_length, num_output_channels)
+    assert output.shape == (2, output_length, num_output_channels)
