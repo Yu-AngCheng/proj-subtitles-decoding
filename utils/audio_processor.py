@@ -4,6 +4,15 @@ from transformers import Wav2Vec2Processor
 
 
 class AudioProcessor:
+    """
+    A class that preprocesses the audio data. It resamples the audio to the target sample rate, and pads the audio to
+    the target_max_length
+
+    Parameters:
+    - target_max_length (int): The max length of the audio data after preprocessing
+    - orig_sample_rate (int): The original sample rate of the audio data
+    - target_sample_rate (int): The target sample rate of the audio data
+    """
     def __init__(self, target_max_length, orig_sample_rate=44100, target_sample_rate=16000):
         self.target_max_length = target_max_length
         self.target_sample_rate = target_sample_rate
@@ -14,13 +23,13 @@ class AudioProcessor:
 
     def __call__(self, audio):
         """
-        Resample the audio, and pad it to the max_audio_length
+        Resample the audio with the target_sample_rate, and pad it to the target_max_length
 
         Parameters:
         - audio (np.ndarray): A numpy array containing the audio
 
         Returns:
-        - padded_audio (torch.Tensor): A (max_audio_length,) tensor containing the padded audio
+        - padded_audio (torch.Tensor): A (max_audio_length,) tensor containing the preprocessed audio
         """
         audio = self._resample(audio)
         padded_audio = self._pad(audio)
@@ -28,28 +37,28 @@ class AudioProcessor:
 
     def _resample(self, audio):
         """
-        Resample the audio to the target sample rate
+        Resample the audio to the target_sample_rate
 
         Parameters:
         - audio (np.ndarray): A numpy array containing the audio
 
         Returns:
-        - waveform (np.ndarray): the waveform of the audio file
+        - audio (np.ndarray): A numpy array containing the resampled audio
         """
         audio = torch.tensor(audio, dtype=torch.float32)
         resampler = torchaudio.transforms.Resample(orig_freq=self.orig_sample_rate, new_freq=self.target_sample_rate)
-        waveform = resampler(audio)
-        return waveform.numpy()
+        audio = resampler(audio).numpy()
+        return audio
 
     def _pad(self, audio):
         """
-        Pad the audio data to the max_audio_length
+        Pad the audio data to the target_max_length
 
         Parameters:
         - audio (np.ndarray): A numpy array containing the audio
 
         Returns:
-        - padded_audio (torch.Tensor): A (max_audio_length) tensor containing the padded audio data
+        - padded_audio (torch.Tensor): A (target_max_length,) tensor containing the padded audio
         """
         padded_audio = self.processor(audio, padding="max_length", max_length=self.target_max_length,
                                       return_tensors="pt", sampling_rate=16000).input_values[0]
@@ -62,7 +71,7 @@ if __name__ == "__main__":
     data = np.load(data_file, allow_pickle=True)
     audios = data.item()['audio']
     audio = audios[0]
-    print(f'The original audio data has shape {audio.shape}')
+    print(f'The original audio data has length {audio.shape[0]}')
 
     target_audio_sample_rate = 16000
     orig_audio_sample_rate = 44100
@@ -77,4 +86,4 @@ if __name__ == "__main__":
                                      target_sample_rate=target_audio_sample_rate)
 
     processed_audio = audio_processor(audio)
-    print(f'The processed audio data has shape {processed_audio.shape}')
+    print(f'The processed audio data has length {processed_audio.shape[0]}')
