@@ -7,7 +7,7 @@ class AudioEncoder(nn.Module):
     """
     An audio encoder capable of embedding the audio data to a vector. Built on top of wav2vec2.
     """
-    def __init__(self):
+    def __init__(self, output_channels=128):
         super(AudioEncoder, self).__init__()
         model_name = "jonatasgrosman/wav2vec2-large-xlsr-53-english"
         self.model = Wav2Vec2Model.from_pretrained(model_name)
@@ -15,7 +15,7 @@ class AudioEncoder(nn.Module):
         self.conv_block_1d = torch.nn.Sequential(
             nn.Conv1d(1024, 360, kernel_size=3, stride=1, padding=1),
             nn.GELU(),
-            nn.Conv1d(360, 128, kernel_size=3, stride=1, padding=1),
+            nn.Conv1d(360, output_channels, kernel_size=3, stride=1, padding=1),
         )
 
     def forward(self, x):
@@ -25,8 +25,8 @@ class AudioEncoder(nn.Module):
         target_audio_max_length is a member variable of the AudioProcessor class. By default, it is 100672.
 
         Returns:
-        - representation (torch.Tensor): A (batch_size, seq_length, 128) tensor containing the output sequence. The
-        seq_length depends on target_audio_max_length. By default, it is 314.
+        - representation (torch.Tensor): A (batch_size, seq_length, output_channels) tensor containing the output
+        sequence. The seq_length depends on target_audio_max_length. By default, it is 314.
         """
         # Extract the activation from the last hidden state
         output = self.model(x)
@@ -52,7 +52,8 @@ if __name__ == "__main__":
     audio_data2, _, _ = dataset[1]
     audio_data = torch.stack([audio_data1, audio_data2]).to(device)
 
-    model = AudioEncoder().to(device)
+    output_channels = 64
+    model = AudioEncoder(output_channels=output_channels).to(device)
 
     with torch.no_grad():
         representation = model(audio_data)
