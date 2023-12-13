@@ -127,7 +127,7 @@ def run(args):
 
     # define the audio encoder
     num_output_channels = args.num_output_channels
-    audio_encoder = AudioEncoder(num_output_channels=num_output_channels).to(device)
+    audio_encoder = AudioEncoder(output_channels=num_output_channels).to(device)
 
     # define the seeg encoder
     num_input_channels = 84
@@ -194,7 +194,7 @@ def get_args():
     arg_parser.add_argument('--num_workers', '-w', type=int, default=4, help="number of workers for dataloader")
     arg_parser.add_argument('--num_output_channels', '-o', type=int, default=64,
                             help="number of output channels for the seeg encoder")
-    arg_parser.add_argument('--num_heads', '-h', type=int, default=3, help="number of heads for the seeg encoder")
+    arg_parser.add_argument('--num_heads', '-hh', type=int, default=3, help="number of heads for the seeg encoder")
     arg_parser.add_argument('--num_encoder_layers', '-n', type=int, default=6, help="number of encoder layers for the "
                                                                                     "seeg encoder")
     arg_parser.add_argument('--dim_feedforward', '-f', type=int, default=2048, help="dim_feedforward for the seeg "
