@@ -68,7 +68,7 @@ class SEEGEncoder(nn.Module):
     def forward(self, x, padding_mask):
         """
         Parameters:
-        - src (torch.Tensor): A (batch_size, input_length, num_input_channels) tensor containing the input sequence.
+        - x (torch.Tensor): A (batch_size, input_length, num_input_channels) tensor containing the input sSEEG data.
         - padding_mask (torch.Tensor): A (batch_size, input_length) boolean tensor containing the mask for the padding.
         True indicates a padding position and False indicates a valid data position.
 
