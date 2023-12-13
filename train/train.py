@@ -126,16 +126,16 @@ def run(args):
         test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, drop_last=True)
 
     # define the audio encoder
-    audio_encoder = AudioEncoder().to(device)
+    num_output_channels = args.num_output_channels
+    audio_encoder = AudioEncoder(num_output_channels=num_output_channels).to(device)
 
     # define the seeg encoder
     num_input_channels = 84
-    num_output_channels = 128
     input_length = 6443
-    output_length = 314  # 199 is the default output length from the audio encoder
-    num_heads = 3
-    num_encoder_layers = 6
-    dim_feedforward = 2048
+    output_length = 314  # 314 is the default output length from the audio encoder
+    num_heads = args.num_heads
+    num_encoder_layers = args.num_encoder_layers
+    dim_feedforward = args.dim_feedforward
     seeg_encoder = SEEGEncoder(num_input_channels=num_input_channels, num_output_channels=num_output_channels,
                                input_length=input_length, output_length=output_length, num_heads=num_heads,
                                num_encoder_layers=num_encoder_layers, dim_feedforward=dim_feedforward).to(device)
@@ -192,6 +192,13 @@ def get_args():
     arg_parser.add_argument('--train_ratio', '-r', type=float, default=0.8,
                             help="the ratio of training data to all data")
     arg_parser.add_argument('--num_workers', '-w', type=int, default=4, help="number of workers for dataloader")
+    arg_parser.add_argument('--num_output_channels', '-o', type=int, default=64,
+                            help="number of output channels for the seeg encoder")
+    arg_parser.add_argument('--num_heads', '-h', type=int, default=3, help="number of heads for the seeg encoder")
+    arg_parser.add_argument('--num_encoder_layers', '-n', type=int, default=6, help="number of encoder layers for the "
+                                                                                    "seeg encoder")
+    arg_parser.add_argument('--dim_feedforward', '-f', type=int, default=2048, help="dim_feedforward for the seeg "
+                                                                                    "encoder")
     args = arg_parser.parse_args()
     return args
 

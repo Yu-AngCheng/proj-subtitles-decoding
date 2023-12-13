@@ -42,20 +42,23 @@ Ensure you run this command in the root directory of the project.
 
 The training script supports various parameters for customization:
 
-- `--exp_name` (`-e`): Set the experiment name; affects where checkpoints/logs are saved. Checkpoints and logs will be saved in `/experiments/$EXP_NAME`. Default: 'lr_1e-3-batch_10-train_ratio-0.8'.
-- `--lr` (`-l`): Learning rate. Default: `1e-3`.
-- `--save_freq` (`-s`): Model saving frequency. Default: `1`.
-- `--total_epoch` (`-t`): Total number of training epochs. Default: `20`.
-- `--cont` (`-c`): Continue training from the latest checkpoint.
-- `--batch_size` (`-b`): Batch size. Default: `10`.
-- `--audio_dir` (`-ad`): Path to the audio data folder. Default: './data/audio_1-4seconds'.
-- `--seeg_dir` (`-sd`): Path to the sEEG data folder. Default: './data/seeg_1-4seconds'.
-- `--train_ratio` (`-r`): Ratio of training data to total data. Default: `0.8`.
-- `--num_workers` (`-w`): Number of workers for data loading. Default: `4`.
+- `--exp_name` (`-e`): Sets the experiment name. This influences the directory where checkpoints and logs are saved. Default: 'lr_1e-3-batch_10-train_ratio-0.8'. Checkpoints and logs will be saved in `/experiments/$EXP_NAME`.
+- `--lr` (`-l`): Specifies the learning rate. Default: `1e-3`.
+- `--save_freq` (`-s`): Determines the frequency of model saving. Default: `1`.
+- `--total_epoch` (`-t`): Sets the total number of training epochs. Default: `20`.
+- `--cont` (`-c`): If specified, training will continue from the latest checkpoint in the specified experiment directory.
+- `--batch_size` (`-b`): Configures the batch size. Default: `10`.
+- `--data_file` (`-d`): Path to the `.npy` file containing the segmented data. Default: './data/data_segmented.npy'.
+- `--train_ratio` (`-r`): Defines the ratio of training data to the total dataset. Default: `0.8`.
+- `--num_workers` (`-w`): Sets the number of workers for data loading. Default: `4`.
+- `--num_output_channels` (`-o`): Configures the number of output channels for the sEEG encoder. Default: `64`.
+- `--num_heads` (`-h`): Specifies the number of heads for the sEEG encoder. Default: `3`.
+- `--num_encoder_layers` (`-n`): Determines the number of encoder layers for the sEEG encoder. Default: `6`.
+- `--dim_feedforward` (`-f`): Sets the dimension of feedforward network in the sEEG encoder. Default: `2048`.
 
 To use these parameters, append them to the training command. For example:
 
-`python -m train.train --lr 0.001 --batch_size 20 --train_ratio 0.75`
+`python -m train.train --lr 0.001 --batch_size 20 --train_ratio 0.75 --num_heads 4 --num_encoder_layers 8`
 
-This example command starts training with a learning rate of 0.001, a batch size of 20, and uses 75% of the data for training.
+This example command starts training with a learning rate of 0.001, a batch size of 20, 75% of the data for training, 4 heads, and 8 encoder layers for the sEEG encoder.
 
