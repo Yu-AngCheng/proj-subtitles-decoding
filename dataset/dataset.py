@@ -33,7 +33,7 @@ class CustomDataset(Dataset):
         # Convert to the max length in the target sample rate
         self.target_audio_max_length = int(orig_audio_max_length * (self.target_audio_sample_rate / self.orig_audio_sample_rate))
 
-        # Compute the max length of the sEEG data
+        # Find the max length of the sEEG data
         self.seeg_max_length = max([seeg.shape[1] for seeg in self.seeg_data])
 
         self.audio_processor = AudioProcessor(target_max_length=self.target_audio_max_length,
@@ -86,7 +86,7 @@ class CustomDataset(Dataset):
 if __name__ == "__main__":
     dataset = CustomDataset(data_file='../data/data_segmented.npy', train_ratio=0.8, is_train=True)
     for i in range(10):
-        audio_data, seeg_data, padding_mask = dataset[i]
-        print(audio_data.shape, seeg_data.shape, padding_mask.shape)
+        audio_data, seeg_data, seeg_padding_mask = dataset[i]
+        print(audio_data.shape, seeg_data.shape, seeg_padding_mask.shape)
 
     print(f'Number of samples: {len(dataset)}')
