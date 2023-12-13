@@ -85,8 +85,10 @@ class CustomDataset(Dataset):
 
 if __name__ == "__main__":
     dataset = CustomDataset(data_file='../data/data_segmented.npy', train_ratio=0.8, is_train=True)
-    for i in range(10):
-        audio_data, seeg_data, seeg_padding_mask = dataset[i]
-        print(audio_data.shape, seeg_data.shape, seeg_padding_mask.shape)
+    for data in dataset:
+        audio, seeg, seeg_padding_mask = data
+        assert audio.shape == (dataset.target_audio_max_length,)
+        assert seeg.shape == (dataset.seeg_max_length, 84,)
+        assert seeg_padding_mask.shape == (dataset.seeg_max_length,)
 
     print(f'Number of samples: {len(dataset)}')
