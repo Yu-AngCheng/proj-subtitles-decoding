@@ -61,7 +61,7 @@ class AudioProcessor:
         - padded_audio (torch.Tensor): A (target_max_length,) tensor containing the padded audio
         """
         padded_audio = self.processor(audio, padding="max_length", max_length=self.target_max_length,
-                                      return_tensors="pt", sampling_rate=16000).input_values[0]
+                                      return_tensors="pt", sampling_rate=16000, truncation=True).input_values[0]
         return padded_audio
 
 
