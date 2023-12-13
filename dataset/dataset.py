@@ -54,20 +54,29 @@ class CustomDataset(Dataset):
         self.total_data_num = len(self.audio_data)
 
     def __getitem__(self, index):
+        """
+        Parameters:
+        - index (int): index of the data to retrieve
+
+        Returns:
+        - audio (torch.Tensor): the audio data of shaoe (target_audio_max_length,)
+        - seeg (torch.Tensor): the sEEG data of shape (seeg_max_length, num_channels)
+        - seeg_padding_mask (torch.Tensor): the padding mask for the sEEG data of shape (seeg_max_length,)
+        """
         # Load and process the audio data
         audio = self.audio_data[index]
         audio = self.audio_processor(audio)
 
         # Load the sEEG data
-        seeg = self.seeg_data[index]
+        seeg = self.seeg_data[index].transpose(1, 0)    # Transpose to (length, channels)
 
         # Create the torch boolean mask for the sEEG data
         seeg_padding_mask = torch.zeros(self.seeg_max_length, dtype=torch.bool)
-        seeg_padding_mask[seeg.shape[1]:] = True
+        seeg_padding_mask[seeg.shape[0]:] = True
 
         # Pad the sEEG data to the max length
-        seeg = torch.tensor(np.pad(seeg, ((0, 0), (0, self.seeg_max_length - seeg.shape[1])), 'constant',
-                                   constant_values=0))
+        seeg = torch.tensor(np.pad(seeg, ((0, self.seeg_max_length - seeg.shape[0]), (0, 0)), 'constant',
+                                   constant_values=0)).float()
         return audio, seeg, seeg_padding_mask
 
     def __len__(self):
