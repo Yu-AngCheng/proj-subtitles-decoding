@@ -14,42 +14,42 @@ from models.seegencoder.seegencoder import SEEGEncoder
 from dataset.dataset import CustomDataset
 
 
-def validate(epoch, audio_encoder, seeg_encoder, val_loader, writer, device):
+def test(audio_encoder, seeg_encoder, test_loader, device):
     audio_encoder.eval()
     seeg_encoder.eval()
-    top1 = AverageMeter()
-    top2 = AverageMeter()
 
-    for audio_data, seeg_data, seeg_padding_mask in tqdm(val_loader):
-        batch_size = audio_data.shape[0]
+    audio_embeddings = None
+    seeg_embeddings = None
 
-        audio_data = audio_data.to(device)
-        seeg_data = seeg_data.to(device)
-        seeg_padding_mask = seeg_padding_mask.to(device)
+    with torch.no_grad():
+        for audio, seeg, seeg_padding_mask in tqdm(test_loader):
+            audio = audio.to(device)
+            seeg = seeg.to(device)
+            seeg_padding_mask = seeg_padding_mask.to(device)
 
-        # Forward
-        audio_embedding = audio_encoder(audio_data)
-        seeg_embedding = seeg_encoder(seeg_data, seeg_padding_mask)
+            # Forward
+            audio_embedding = audio_encoder(audio)
+            seeg_embedding = seeg_encoder(seeg, seeg_padding_mask)
 
-        # Flatten the output for later similarity computation
-        audio_embedding = audio_embedding.flatten(1, 2)
-        seeg_embedding = seeg_embedding.flatten(1, 2)
+            # Flatten the output for later similarity computation
+            audio_embedding = audio_embedding.flatten(1, 2)
+            seeg_embedding = seeg_embedding.flatten(1, 2)
+
+            if audio_embeddings is None:
+                audio_embeddings = audio_embedding
+                seeg_embeddings = seeg_embedding
+            else:
+                audio_embeddings = torch.cat((audio_embeddings, audio_embedding), dim=0)
+                seeg_embeddings = torch.cat((seeg_embeddings, seeg_embedding), dim=0)
 
         # Compute similarity
-        sim = torch.einsum('i d, j d -> i j', audio_embedding, seeg_embedding) * math.e
+        sim = torch.einsum('i d, j d -> i j', audio_embeddings, seeg_embeddings) * math.e
+        labels = torch.arange(audio_embeddings.shape[0]).to(device)
 
-        # Compute loss
-        labels = torch.arange(batch_size).to(device)
-
-        # update metric
+        # Compute accuracy
         acc1, acc2 = evaluate(sim, labels, topk=(1, 2))
-        top1.update(acc1.item(), batch_size)
-        top2.update(acc2.item(), batch_size)
-
-    writer.add_scalar('Val/Acc@1', top1.avg, epoch)
-    writer.add_scalar('Val/Acc@2', top2.avg, epoch)
-    print(f'Val Acc@1 {top1.avg:.3f}')
-    print(f'Val Acc@2 {top2.avg:.3f}')
+        print(f'Test Acc@1 {acc1.item():.3f}')
+        print(f'Test Acc@2 {acc2.item():.3f}')
 
 
 def train(epoch, audio_encoder, seeg_encoder, optimizer, train_loader, writer, device):
@@ -60,18 +60,18 @@ def train(epoch, audio_encoder, seeg_encoder, optimizer, train_loader, writer, d
     top2 = AverageMeter()
     iteration = len(train_loader) * epoch
 
-    for audio_data, seeg_data, seeg_padding_mask in tqdm(train_loader):
-        batch_size = audio_data.shape[0]
+    for audio, seeg, seeg_padding_mask in tqdm(train_loader):
+        batch_size = audio.shape[0]
 
-        audio_data = audio_data.to(device)
-        seeg_data = seeg_data.to(device)
+        audio = audio.to(device)
+        seeg = seeg.to(device)
         seeg_padding_mask = seeg_padding_mask.to(device)
 
         optimizer.zero_grad()
 
         # Forward
-        audio_embedding = audio_encoder(audio_data)
-        seeg_embedding = seeg_encoder(seeg_data, seeg_padding_mask)
+        audio_embedding = audio_encoder(audio)
+        seeg_embedding = seeg_encoder(seeg, seeg_padding_mask)
 
         # Flatten the output for later similarity computation
         audio_embedding = audio_embedding.flatten(1, 2)
@@ -170,12 +170,11 @@ def run(args):
             ckpt_file = os.path.join(ckpt_folder, f'ckpt_epoch_{epoch}.pth')
             torch.save(state, ckpt_file)
 
-        with torch.no_grad():
-            validate(epoch, audio_encoder, seeg_encoder, test_loader, writer, device)
     torch.save(audio_encoder.state_dict(), os.path.join(ckpt_folder, f'audio_encoder_epoch_{epoch}.pth'))
     torch.save(seeg_encoder.state_dict(), os.path.join(ckpt_folder, f'seeg_encoder_epoch_{epoch}.pth'))
     writer.close()
 
+    test(audio_encoder, seeg_encoder, test_loader, device)
 
 def get_args():
     arg_parser = argparse.ArgumentParser()
