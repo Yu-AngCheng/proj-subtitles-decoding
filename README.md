@@ -42,14 +42,14 @@ Ensure you run this command in the root directory of the project.
 
 The training script supports various parameters for customization:
 
-- `--exp_name` (`-e`): Sets the experiment name. This influences the directory where checkpoints and logs are saved. Default: 'lr_1e-3-batch_10-train_ratio-0.8'. Checkpoints and logs will be saved in `/experiments/$EXP_NAME`.
+- `--exp_name` (`-e`): Sets the experiment name. This influences the directory where checkpoints and logs are saved. Default: 'lr_1e-3-batch_10-train_ratio-0.7'. Checkpoints and logs will be saved in `/experiments/$EXP_NAME`.
 - `--lr` (`-l`): Specifies the learning rate. Default: `1e-3`.
 - `--save_freq` (`-s`): Determines the frequency of model saving. Default: `1`.
 - `--total_epoch` (`-t`): Sets the total number of training epochs. Default: `20`.
 - `--cont` (`-c`): If specified, training will continue from the latest checkpoint in the specified experiment directory.
 - `--batch_size` (`-b`): Configures the batch size. Default: `10`.
 - `--data_file` (`-d`): Path to the `.npy` file containing the segmented data. Default: './data/data_segmented.npy'.
-- `--train_ratio` (`-r`): Defines the ratio of training data to the total dataset. Default: `0.8`.
+- `--train_ratio` (`-r`): Defines the ratio of training data to the total dataset. 1/3 of the remaining data will be used for testing and 2/3 for validation. Default: `0.7`.
 - `--num_workers` (`-w`): Sets the number of workers for data loading. Default: `4`.
 - `--num_output_channels` (`-o`): Configures the number of output channels for the sEEG encoder. Default: `64`.
 - `--num_heads` (`-h`): Specifies the number of heads for the sEEG encoder. Default: `3`.
