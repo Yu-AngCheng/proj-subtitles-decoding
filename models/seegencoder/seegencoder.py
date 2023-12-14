@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    dataset = CustomDataset(data_file='../../data/data_segmented.npy', train_ratio=0.8, is_train=True)
+    dataset = CustomDataset(data_file='../../data/data_segmented.npy', train_ratio=0.7, split='train')
     _, seeg1, seeg_padding_mask1 = dataset[0]
     _, seeg2, seeg_padding_mask2 = dataset[1]
 

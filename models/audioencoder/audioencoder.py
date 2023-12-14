@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    dataset = CustomDataset(data_file='../../data/data_segmented.npy', train_ratio=0.8, is_train=True)
+    dataset = CustomDataset(data_file='../../data/data_segmented.npy', train_ratio=0.7, split='train')
     audio_data1, _, _ = dataset[0]
     audio_data2, _, _ = dataset[1]
     audio_data = torch.stack([audio_data1, audio_data2]).to(device)

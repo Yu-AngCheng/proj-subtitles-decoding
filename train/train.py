@@ -118,12 +118,15 @@ def run(args):
     # Define the dataloaders
     data_file = args.data_file
     train_ratio = args.train_ratio
-    train_dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, is_train=True)
-    test_dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, is_train=False)
+    train_dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, split='train')
+    test_dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, split='test')
+    val_dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, split='val')
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers, drop_last=True)
     test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers, drop_last=True)
+        test_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+    val_loader = torch.utils.data.DataLoader(
+        val_dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
 
     # define the audio encoder
     num_output_channels = args.num_output_channels

@@ -10,15 +10,16 @@ class CustomDataset(Dataset):
 
     Parameters:
     - data_file (str): path to the .npy file containing the data
-    - train_ratio (float): ratio of the dataset to use for training
-    - is_train (bool): whether to use the training or testing portion of the dataset
+    - train_ratio (float): ratio of the dataset to use for training. The remaining data is split into test and
+    validation. Test is 1/3 of the remaining data, and validation is the remaining 2/3
+    - split (str): which split of the data to use (train, test, val)
     - orig_audio_sample_rate (int): the original sample rate of the audio data
     - target_audio_sample_rate (int): the target sample rate of the audio data
     """
-    def __init__(self, data_file, train_ratio=0.8, is_train=True, orig_audio_sample_rate=44100,
+    def __init__(self, data_file, train_ratio=0.7, split=True, orig_audio_sample_rate=44100,
                  target_audio_sample_rate=16000):
         super(CustomDataset).__init__()
-        self.is_train = is_train
+        self.split = split
         self.orig_audio_sample_rate = orig_audio_sample_rate
         self.target_audio_sample_rate = target_audio_sample_rate
 
@@ -40,14 +41,22 @@ class CustomDataset(Dataset):
                                               orig_sample_rate=self.orig_audio_sample_rate,
                                               target_sample_rate=self.target_audio_sample_rate)
 
-        # Split into train and test sets
+        # Split the data into train, test, and validation sets
+        # The test is 1/3 of the remaining data from the train split, and the validation is the remaining 2/3
         split_idx = int(len(self.audio_data) * train_ratio)
-        if self.is_train:
+        total_test_val_data = len(self.audio_data) - split_idx
+        test_set_size = total_test_val_data // 3
+        if self.split == 'train':
             self.audio_data = self.audio_data[:split_idx]
             self.seeg_data = self.seeg_data[:split_idx]
+        elif self.split == 'test':
+            self.audio_data = self.audio_data[split_idx:test_set_size + split_idx]
+            self.seeg_data = self.seeg_data[split_idx:test_set_size + split_idx]
+        elif self.split == 'val':
+            self.audio_data = self.audio_data[test_set_size + split_idx:]
+            self.seeg_data = self.seeg_data[test_set_size + split_idx:]
         else:
-            self.audio_data = self.audio_data[split_idx:]
-            self.seeg_data = self.seeg_data[split_idx:]
+            raise ValueError("split must be either 'train', 'test', or 'val'")
 
         assert len(self.audio_data) == len(self.seeg_data), "The number of audio and sEEG data must be the same"
 
@@ -84,11 +93,24 @@ class CustomDataset(Dataset):
 
 
 if __name__ == "__main__":
-    dataset = CustomDataset(data_file='../data/data_segmented.npy', train_ratio=0.8, is_train=True)
-    for data in dataset:
-        audio, seeg, seeg_padding_mask = data
-        assert audio.shape == (dataset.target_audio_max_length,)
-        assert seeg.shape == (dataset.seeg_max_length, 84,)
-        assert seeg_padding_mask.shape == (dataset.seeg_max_length,)
+    def check_data_shape(dataset):
+        for data in dataset:
+            audio, seeg, seeg_padding_mask = data
+            assert audio.shape == (dataset.target_audio_max_length,)
+            assert seeg.shape == (dataset.seeg_max_length, 84,)
+            assert seeg_padding_mask.shape == (dataset.seeg_max_length,)
 
-    print(f'Number of samples: {len(dataset)}')
+    data_file = '../data/data_segmented.npy'
+    train_ratio = 0.7
+
+    dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, split='train')
+    check_data_shape(dataset)
+    print(f'Number of samples in train set: {len(dataset)}')
+
+    dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, split='test')
+    check_data_shape(dataset)
+    print(f'Number of samples in test set: {len(dataset)}')
+
+    dataset = CustomDataset(data_file=data_file, train_ratio=train_ratio, split='val')
+    check_data_shape(dataset)
+    print(f'Number of samples in val set: {len(dataset)}')
