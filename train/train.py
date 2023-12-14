@@ -14,7 +14,7 @@ from models.seegencoder.seegencoder import SEEGEncoder
 from dataset.dataset import CustomDataset
 
 
-def test(audio_encoder, seeg_encoder, test_loader, device):
+def eval(audio_encoder, seeg_encoder, eval_loader, device):
     audio_encoder.eval()
     seeg_encoder.eval()
 
@@ -22,7 +22,7 @@ def test(audio_encoder, seeg_encoder, test_loader, device):
     seeg_embeddings = None
 
     with torch.no_grad():
-        for audio, seeg, seeg_padding_mask in tqdm(test_loader):
+        for audio, seeg, seeg_padding_mask in tqdm(eval_loader):
             audio = audio.to(device)
             seeg = seeg.to(device)
             seeg_padding_mask = seeg_padding_mask.to(device)
@@ -50,6 +50,7 @@ def test(audio_encoder, seeg_encoder, test_loader, device):
         acc1, acc2 = evaluate(sim, labels, topk=(1, 2))
         print(f'Test Acc@1 {acc1.item():.3f}')
         print(f'Test Acc@2 {acc2.item():.3f}')
+        return acc1.item(), acc2.item()
 
 
 def train(epoch, audio_encoder, seeg_encoder, optimizer, train_loader, writer, device):
@@ -160,6 +161,9 @@ def run(args):
     else:
         start_epoch = 0
 
+    best_val_acc1 = 0
+    best_epoch = 0
+
     for epoch in range(start_epoch, args.total_epoch):
         train(epoch, audio_encoder, seeg_encoder, optimizer, train_loader, writer, device)
 
@@ -173,11 +177,25 @@ def run(args):
             ckpt_file = os.path.join(ckpt_folder, f'ckpt_epoch_{epoch}.pth')
             torch.save(state, ckpt_file)
 
-    torch.save(audio_encoder.state_dict(), os.path.join(ckpt_folder, f'audio_encoder_epoch_{epoch}.pth'))
-    torch.save(seeg_encoder.state_dict(), os.path.join(ckpt_folder, f'seeg_encoder_epoch_{epoch}.pth'))
+        # Validation
+        acc1, _ = eval(audio_encoder, seeg_encoder, val_loader, device)
+
+        # Save the best model
+        if acc1 > best_val_acc1:
+            best_val_acc1 = acc1
+            best_epoch = epoch
+            torch.save(audio_encoder.state_dict(), os.path.join(ckpt_folder, f'audio_encoder_epoch_{epoch}.pth'))
+            torch.save(seeg_encoder.state_dict(), os.path.join(ckpt_folder, f'seeg_encoder_epoch_{epoch}.pth'))
+
     writer.close()
 
-    test(audio_encoder, seeg_encoder, test_loader, device)
+    # Load the best model
+    audio_encoder.load_state_dict(torch.load(os.path.join(ckpt_folder, f'audio_encoder_epoch_{best_epoch}.pth')))
+    seeg_encoder.load_state_dict(torch.load(os.path.join(ckpt_folder, f'seeg_encoder_epoch_{best_epoch}.pth')))
+
+    # Test
+    eval(audio_encoder, seeg_encoder, test_loader, device)
+
 
 def get_args():
     arg_parser = argparse.ArgumentParser()
