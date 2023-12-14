@@ -14,7 +14,7 @@ from models.seegencoder.seegencoder import SEEGEncoder
 from dataset.dataset import CustomDataset
 
 
-def eval(audio_encoder, seeg_encoder, eval_loader, device):
+def eval(audio_encoder, seeg_encoder, eval_loader, device, split):
     audio_encoder.eval()
     seeg_encoder.eval()
 
@@ -48,8 +48,8 @@ def eval(audio_encoder, seeg_encoder, eval_loader, device):
 
         # Compute accuracy
         acc1, acc2 = evaluate(sim, labels, topk=(1, 2))
-        print(f'Test Acc@1 {acc1.item():.3f}')
-        print(f'Test Acc@2 {acc2.item():.3f}')
+        print(f'{split} Acc@1 {acc1.item():.3f}')
+        print(f'{split} Acc@2 {acc2.item():.3f}')
         return acc1.item(), acc2.item()
 
 
@@ -178,7 +178,7 @@ def run(args):
             torch.save(state, ckpt_file)
 
         # Validation
-        acc1, _ = eval(audio_encoder, seeg_encoder, val_loader, device)
+        acc1, _ = eval(audio_encoder, seeg_encoder, val_loader, device, split='val')
 
         # Save the best model
         if acc1 > best_val_acc1:
@@ -194,7 +194,7 @@ def run(args):
     seeg_encoder.load_state_dict(torch.load(os.path.join(ckpt_folder, f'seeg_encoder_epoch_{best_epoch}.pth')))
 
     # Test
-    eval(audio_encoder, seeg_encoder, test_loader, device)
+    eval(audio_encoder, seeg_encoder, test_loader, device, split='test')
 
 
 def get_args():
