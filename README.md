@@ -6,6 +6,7 @@
 
 In this project, our team - Sixuan Chen, Laila Johnston, Leyang Hu, and Yu-Ang Cheng - aims to extend the boundaries of speech decoding by applying advanced neural network models to Stereoelectroencephalography (sEEG) data. Our goal is to decode semantic information from sEEG recordings obtained in a naturalistic setting, specifically while subjects watch a movie. This approach allows us to capture a richer and more varied set of neural responses compared to traditional methods.
 
+![Model Illustation](images/figure.jpg)
 
 
 ## Prerequisites
