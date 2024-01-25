@@ -16,7 +16,7 @@ class CustomDataset(Dataset):
     - orig_audio_sample_rate (int): the original sample rate of the audio data
     - target_audio_sample_rate (int): the target sample rate of the audio data
     """
-    def __init__(self, data_file, train_ratio=0.7, split=True, orig_audio_sample_rate=44100,
+    def __init__(self, data_file, train_ratio=0.7, split='train', orig_audio_sample_rate=44100,
                  target_audio_sample_rate=16000):
         super(CustomDataset).__init__()
         self.split = split
