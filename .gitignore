@@ -165,3 +165,7 @@ data/green_book
 *.npy
 *.npz
 *.srt
+*.pbz2
+*.wav
+*.avi
+*.pyc
